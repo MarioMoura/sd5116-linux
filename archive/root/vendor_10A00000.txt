@@ -1,0 +1,39 @@
+Trying 192.168.1.1...
+Connected to 192.168.1.1.
+Escape character is '^]'.
+
+(none) login: root
+login: can't chdir to home directory '/root'
+/ # devmem 0x10A00000
+Bus error
+/ # devmem 0x10A00004
+Bus error
+/ # devmem 0x10A00008
+Bus error
+/ # devmem 0x10A0000C
+Bus error
+/ # devmem 0x10A00010
+Bus error
+/ # devmem 0x10A00014
+Bus error
+/ # devmem 0x10A00018
+Bus error
+/ # devmem 0x10A0001C
+Bus error
+/ # devmem 0x10A00020
+Bus error
+/ # devmem 0x10A00024
+Bus error
+/ # devmem 0x10A00028
+Bus error
+/ # devmem 0x10A0002C
+Bus error
+/ # devmem 0x10A00030
+Bus error
+/ # devmem 0x10A00034
+Bus error
+/ # devmem 0x10A00038
+Bus error
+/ # devmem 0x10A0003C
+Bus error
+/ # Connection closed by foreign host.

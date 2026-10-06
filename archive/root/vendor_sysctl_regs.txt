@@ -1,0 +1,55 @@
+Trying 192.168.1.1...
+Connected to 192.168.1.1.
+Escape character is '^]'.
+
+(none) login: root
+login: can't chdir to home directory '/root'
+/ # devmem 0x10100000
+0x00550100
+/ # devmem 0x10100004
+0x00000000
+/ # devmem 0x10100008
+0x00000001
+/ # devmem 0x1010000C
+0x00000003
+/ # devmem 0x10100010
+0x00000000
+/ # devmem 0x10100014
+0x00000258
+/ # devmem 0x10100018
+0x00000000
+/ # devmem 0x1010001C
+0x00000000
+/ # devmem 0x10100020
+0x00000000
+/ # devmem 0x10100024
+0x00000000
+/ # devmem 0x10100028
+0x00000000
+/ # devmem 0x1010002C
+0x00000000
+/ # devmem 0x10100030
+0x00000000
+/ # devmem 0x10100034
+0x00000000
+/ # devmem 0x10100038
+0x00000000
+/ # devmem 0x1010003C
+0x00000000
+/ # devmem 0x10100040
+0x00000000
+/ # devmem 0x10100044
+0x00000000
+/ # devmem 0x10100048
+0x00000000
+/ # devmem 0x1010004C
+0x00000000
+/ # devmem 0x10100050
+0x00000000
+/ # devmem 0x10100054
+0x00000000
+/ # devmem 0x10100058
+0x00000000
+/ # devmem 0x1010005C
+0x00000000
+/ # Connection closed by foreign host.

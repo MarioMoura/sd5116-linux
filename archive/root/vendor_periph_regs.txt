@@ -1,0 +1,46 @@
+Trying 192.168.1.1...
+Connected to 192.168.1.1.
+Escape character is '^]'.
+
+(none) login: root
+login: can't chdir to home directory '/root'
+/ # cat /proc/modules | grep mdio
+hi_mdio 3000 0 - Live 0xbf021000 (P)
+hi_sysctl 8096 9 hi_diag_chip,hi_khal,hi_sci,hi_timer,hi_spi,hi_i2c,hi_gpio,hi_pie,hi_mdio, Live 0xbf01a000 (P)
+/ # devmem 0x13000000
+0x00000000
+/ # devmem 0x13000004
+0x00000000
+/ # devmem 0x13000008
+0x00000000
+/ # devmem 0x1300000C
+0x00000000
+/ # devmem 0x10109000
+0xFFFFFFFF
+/ # devmem 0x10109004
+0xFFFFFFFF
+/ # devmem 0x10109008
+0xFFFFFFFF
+/ # devmem 0x1010900C
+0xFFFFFFFF
+/ # devmem 0x11000000
+0x00000000
+/ # devmem 0x11000004
+0x00000003
+/ # devmem 0x11000038
+0x000003FF
+/ # devmem 0x11080000
+0x00000001
+/ # devmem 0x11080038
+0x00000000
+/ # devmem 0x10A20000
+0x00000000
+/ # devmem 0x10A20004
+0x00000000
+/ # devmem 0x10A20060
+0x00000000
+/ # devmem 0x14880000
+0x00000000
+/ # devmem 0x14880060
+0x08CE048C
+/ # Connection closed by foreign host.

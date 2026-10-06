@@ -1,0 +1,3 @@
+#!/bin/sh
+# mtdname <label>: print /dev/mtdN for a flash partition label
+sed -n "s/^\(mtd[0-9]*\): .* \"$1\"\$/\/dev\/\1/p" /proc/mtd

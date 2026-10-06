@@ -1,0 +1,10 @@
+22:14:41   boot retry (tftp failed: skip.dtb)
+22:16:55   boot retry (could not catch U-Boot)
+22:19:09   boot retry (could not catch U-Boot)
+22:21:24   boot retry (could not catch U-Boot)
+22:25:02 skip reg 14880030..14880030 (2) -> FAIL
+22:26:28 skip reg 14880030..14880030 (1) -> FAIL
+22:28:56 skip reg 14880030..14880030 (1) -> PASS
+22:31:24 skip reg 1238000c..1238000c (1) -> PASS
+22:33:52 skip reg 124d7010..124d7020 (2) -> PASS
+22:36:21 skip reg 123c3ff8..123c3f24 (3) -> PASS

@@ -1,0 +1,22 @@
+# kernel trees, toolchain, build output, images
+/linux/
+/linux-sd5116/
+/build/
+/toolchain/
+/.venv/
+/flash/
+/tftp/
+
+# credentials, vendor firmware material, logs
+/private/
+
+# generated
+initramfs/out/
+initramfs/busybox
+initramfs/dropbearmulti
+initramfs/dnsmasq
+initramfs/etc/uboot/*.bin
+tools/*.o
+tools/*.elf
+tools/*.bin
+__pycache__/
