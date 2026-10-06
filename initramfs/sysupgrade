@@ -1,6 +1,8 @@
 #!/bin/sh
 # sysupgrade [-s a|b] <dir|http-url>
 # Source holds slot-a.bin, slot-b.bin and sha256sums (from tools/mkflash.py image).
+# The checksums only catch corruption: copy the files over SSH (scp to a directory)
+# rather than serving them over HTTP, which anyone on the LAN could spoof.
 # Writes the inactive slot, arms a one-shot boot into it and reboots. The new slot
 # becomes permanent only after it boots with the LAN port up (see /init); otherwise the
 # next boot falls back to the current slot.
@@ -19,15 +21,17 @@ fi
 
 img=slot-$tgt.bin
 tmp=/tmp/upgrade
-rm -rf $tmp && mkdir -p $tmp
+rm -rf $tmp
 case "$1" in
 http://*)
+	mkdir -p $tmp
 	wget -q -O $tmp/$img "$1/$img"
-	wget -q -O $tmp/sha256sums "$1/sha256sums" ;;
+	wget -q -O $tmp/sha256sums "$1/sha256sums"
+	cd $tmp ;;
 *)
-	cp "$1/$img" "$1/sha256sums" $tmp/ ;;
+	# a directory copied over SSH is used in place, RAM has no room for a copy
+	cd "$1" ;;
 esac
-cd $tmp
 grep " $img\$" sha256sums | sha256sum -c -
 
 env=$(mtdname u-boot-env)

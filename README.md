@@ -84,12 +84,16 @@ the device tree address and jumps to the kernel.
 
 ## Updating
 
-Serve `flash/out` over HTTP and run `sysupgrade` on the board:
+Copy the images over SSH and run `sysupgrade` on them:
 
 ```sh
-cd flash/out && python3 -m http.server 8000
-ssh dns 'setsid sysupgrade http://192.168.15.10:8000 </dev/null >/tmp/sysupgrade.log 2>&1 &'
+ssh dns mkdir -p /tmp/fw && scp -O flash/out/* dns:/tmp/fw/
+ssh dns 'setsid sysupgrade /tmp/fw </dev/null >/tmp/sysupgrade.log 2>&1 &'
 ```
+
+SSH makes sure the image comes from you. `sysupgrade` also accepts an `http://` URL, but
+the checksums are fetched from the same server, so that only guards against corruption,
+not against someone on the LAN serving their own image.
 
 `sysupgrade` checks the image, writes the slot that is not running and reboots into it
 once. The new slot is kept only if the LAN port comes up within 60 s; a crash, a hang

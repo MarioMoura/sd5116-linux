@@ -20,3 +20,6 @@ tools/*.o
 tools/*.elf
 tools/*.bin
 __pycache__/
+
+# console capture written by tools/serialctl.py
+/serial.log
