@@ -1,6 +1,5 @@
 # kernel trees, toolchain, build output, images
 /linux/
-/linux-sd5116/
 /build/
 /toolchain/
 /.venv/

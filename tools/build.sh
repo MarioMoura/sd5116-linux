@@ -2,12 +2,12 @@
 # Build everything for a release: userland binaries, trampoline, U-Boot env blobs,
 # the kernel with the initramfs built in, and the flash images in flash/out.
 #
-#   tools/build.sh                         kernel tree in <repo>/linux-sd5116
+#   tools/build.sh                         kernel tree in <repo>/linux
 #   LINUX=/path/to/kernel tools/build.sh
 set -e
 
 ONU_ROOT=$(cd "$(dirname "$0")/.." && pwd)
-LINUX=${LINUX:-$ONU_ROOT/linux-sd5116}
+LINUX=${LINUX:-$ONU_ROOT/linux}
 CROSS_COMPILE=${CROSS_COMPILE:-arm-none-eabi-}
 # the kernel config and initramfs_list refer to files as ${ONU_ROOT}/...
 export ONU_ROOT LINUX

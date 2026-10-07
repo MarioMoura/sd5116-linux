@@ -46,7 +46,7 @@ repository, and a read-out of the original flash in `flash/orig/` (for the vendo
 and the board's MAC address):
 
 ```sh
-git clone -b sd5116 https://github.com/MarioMoura/linux.git linux-sd5116
+git clone -b sd5116 https://github.com/MarioMoura/linux.git linux
 tools/build.sh
 ```
 
