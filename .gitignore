@@ -1,10 +1,7 @@
-# kernel trees, toolchain, build output, images
+# kernel tree, Python env for dtschema, flash read-outs and images
 /linux/
-/build/
-/toolchain/
 /.venv/
 /flash/
-/tftp/
 
 # credentials, vendor firmware material, logs
 /private/
