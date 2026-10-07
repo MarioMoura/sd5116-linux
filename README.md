@@ -41,32 +41,21 @@ The LAN port is the `lan` interface; `eth0` is the internal conduit to the switc
 
 ## Building
 
-Needs `arm-none-eabi-gcc`, Docker and Python 3. The kernel config and
-`initramfs/initramfs_list` use absolute paths under `/home/mario/onu`; adjust both if the
-repository lives elsewhere.
+Needs `arm-none-eabi-gcc`, Docker and Python 3, the kernel branch cloned into the
+repository, and a read-out of the original flash in `flash/orig/` (for the vendor U-Boot
+and the board's MAC address):
 
 ```sh
-# userland binaries (static, musl)
-docker build --output type=local,dest=initramfs/out initramfs
-cp initramfs/out/busybox initramfs/out/dropbearmulti initramfs/out/dnsmasq initramfs/
-
-# trampoline and U-Boot environment blobs
-make -C tools
-python3 tools/mkflash.py env
-
-# kernel, with the initramfs built in
-git clone -b sd5116 https://github.com/MarioMoura/linux.git ~/onu/linux-sd5116
-cd ~/onu/linux-sd5116
-make ARCH=arm CROSS_COMPILE=arm-none-eabi- sd5116_defconfig
-make ARCH=arm CROSS_COMPILE=arm-none-eabi- zImage hisilicon/sd5116-fiberhome-an5506-01a.dtb
-
-# flash images
-cd ~/onu && LINUX=~/onu/linux-sd5116 python3 tools/mkflash.py image
+git clone -b sd5116 https://github.com/MarioMoura/linux.git linux-sd5116
+tools/build.sh
 ```
 
-`mkflash.py image` writes `flash/out/slot-a.bin`, `slot-b.bin` and `sha256sums` for
-updates, and `flash/sd5116-linux.bin`, a full 16 MB image for the CH341A. It needs a
-read-out of the original flash in `flash/orig/` for the vendor U-Boot.
+`tools/build.sh` builds the userland binaries (Docker), the trampoline and the U-Boot
+environment blobs, then the kernel with the initramfs built in, and finally the flash
+images: `flash/out/slot-a.bin`, `slot-b.bin` and `sha256sums` for updates, and
+`flash/sd5116-linux.bin`, a full 16 MB image for the CH341A. `LINUX=<path>` points it at
+another kernel tree. The kernel config and `initramfs/initramfs_list` find the repository
+through `${ONU_ROOT}`, which the script sets.
 
 ## Flash layout
 
