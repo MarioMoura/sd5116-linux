@@ -18,7 +18,7 @@ nod /dev/null 0666 0 0 c 1 3
 nod /dev/mem 0600 0 0 c 1 1
 
 # Busybox
-file /bin/busybox /home/mario/onu/initramfs/busybox 0755 0 0
+file /bin/busybox ${ONU_ROOT}/initramfs/busybox 0755 0 0
 
 # Symlinks for essential commands
 slink /bin/sh busybox 0777 0 0
@@ -65,30 +65,30 @@ slink /sbin/reboot ../bin/busybox 0777 0 0
 slink /sbin/halt ../bin/busybox 0777 0 0
 
 # Init script
-file /init /home/mario/onu/initramfs/init_script 0755 0 0
+file /init ${ONU_ROOT}/initramfs/init_script 0755 0 0
 
 # U-Boot env blobs (tools/mkflash.py env) and updater
 dir /etc/uboot 0755 0 0
-file /etc/uboot/env-a.bin /home/mario/onu/initramfs/etc/uboot/env-a.bin 0644 0 0
-file /etc/uboot/env-b.bin /home/mario/onu/initramfs/etc/uboot/env-b.bin 0644 0 0
-file /etc/uboot/env-try-a.bin /home/mario/onu/initramfs/etc/uboot/env-try-a.bin 0644 0 0
-file /etc/uboot/env-try-b.bin /home/mario/onu/initramfs/etc/uboot/env-try-b.bin 0644 0 0
-file /sbin/sysupgrade /home/mario/onu/initramfs/sysupgrade 0755 0 0
-file /sbin/mtdname /home/mario/onu/initramfs/mtdname 0755 0 0
-file /sbin/buttond /home/mario/onu/initramfs/buttond 0755 0 0
+file /etc/uboot/env-a.bin ${ONU_ROOT}/initramfs/etc/uboot/env-a.bin 0644 0 0
+file /etc/uboot/env-b.bin ${ONU_ROOT}/initramfs/etc/uboot/env-b.bin 0644 0 0
+file /etc/uboot/env-try-a.bin ${ONU_ROOT}/initramfs/etc/uboot/env-try-a.bin 0644 0 0
+file /etc/uboot/env-try-b.bin ${ONU_ROOT}/initramfs/etc/uboot/env-try-b.bin 0644 0 0
+file /sbin/sysupgrade ${ONU_ROOT}/initramfs/sysupgrade 0755 0 0
+file /sbin/mtdname ${ONU_ROOT}/initramfs/mtdname 0755 0 0
+file /sbin/buttond ${ONU_ROOT}/initramfs/buttond 0755 0 0
 
 # Users, network config, SSH
 dir /root 0700 0 0
-file /etc/passwd /home/mario/onu/initramfs/etc/passwd 0644 0 0
-file /etc/shadow /home/mario/onu/initramfs/etc/shadow 0600 0 0
-file /etc/group /home/mario/onu/initramfs/etc/group 0644 0 0
-file /etc/hosts /home/mario/onu/initramfs/etc/hosts 0644 0 0
-file /etc/network.conf /home/mario/onu/initramfs/etc/network.conf 0644 0 0
-file /etc/udhcpc.script /home/mario/onu/initramfs/etc/udhcpc.script 0755 0 0
+file /etc/passwd ${ONU_ROOT}/initramfs/etc/passwd 0644 0 0
+file /etc/shadow ${ONU_ROOT}/initramfs/etc/shadow 0600 0 0
+file /etc/group ${ONU_ROOT}/initramfs/etc/group 0644 0 0
+file /etc/hosts ${ONU_ROOT}/initramfs/etc/hosts 0644 0 0
+file /etc/network.conf ${ONU_ROOT}/initramfs/etc/network.conf 0644 0 0
+file /etc/udhcpc.script ${ONU_ROOT}/initramfs/etc/udhcpc.script 0755 0 0
 dir /etc/ssh 0755 0 0
-file /etc/ssh/authorized_keys /home/mario/onu/initramfs/etc/ssh/authorized_keys 0644 0 0
-file /bin/dropbearmulti /home/mario/onu/initramfs/dropbearmulti 0755 0 0
+file /etc/ssh/authorized_keys ${ONU_ROOT}/initramfs/etc/ssh/authorized_keys 0644 0 0
+file /bin/dropbearmulti ${ONU_ROOT}/initramfs/dropbearmulti 0755 0 0
 slink /bin/dropbear dropbearmulti 0777 0 0
 slink /bin/dropbearkey dropbearmulti 0777 0 0
 slink /bin/scp dropbearmulti 0777 0 0
-file /bin/dnsmasq /home/mario/onu/initramfs/dnsmasq 0755 0 0
+file /bin/dnsmasq ${ONU_ROOT}/initramfs/dnsmasq 0755 0 0

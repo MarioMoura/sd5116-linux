@@ -11,7 +11,7 @@ Slot:  trampoline-flash @0, dtb @0x1000, zImage @0x10000.
 import hashlib, os, struct, subprocess, sys, zlib
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-LINUX = os.environ.get("LINUX", f"{ROOT}/linux")
+LINUX = os.environ.get("LINUX", f"{ROOT}/linux-sd5116")
 FLASH = 16 << 20
 ENV_OFF, ENV_SIZE = 0x40000, 0x20000
 SLOTS = {"a": 0x080000, "b": 0x480000}
