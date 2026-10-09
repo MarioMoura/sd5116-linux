@@ -20,6 +20,10 @@ Cold boot + ping per test, greedy group drop, FAIL counted only if repeated, eve
 - Kept singles: scheduler 0x3d, CPU queue 9 enable (profile 0x1a), thresholds 0x01 and 0x1a, channels 4 and 8, policer, IFC actions 2 and 4, LAN MAC mode (now phylink).
 - Lesson: the old driver accepted tagged and untagged CPU frames, so "add PVID on ingress" looked unneeded; DSA needs it.
 
+## Two VLANs per user port
+
+The switch floods frames back to their ingress port (port_iso table has no effect), so with one VLAN per port every LAN broadcast was echoed onto the LAN and other hosts' MACs got learned on the ONU port (their DHCP broke). Now the tag_8021q VLAN (PVID, 3080) has only the CPU as member, and the tagger sends in `SD5116_TX_VID` (3080 - 1024 = 2056), which has only the LAN port. Egress action 1 strips the outer tag whatever its VID (5 only strips the PVID). Check: switch counter 0x112c1028 (flood copies out of `lan`) only grows with the board's own broadcasts (3 in 30 s on 2026-10-09, against hundreds of LAN broadcasts received), not with LAN traffic.
+
 ## Security
 
 - User ports push the PVID on tagged and priority-tagged ingress too (LAN cannot pick a VLAN).
