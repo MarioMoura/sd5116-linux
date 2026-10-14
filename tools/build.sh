@@ -14,7 +14,7 @@ export ONU_ROOT LINUX
 
 cd "$ONU_ROOT"
 docker build -q --output type=local,dest=initramfs/out initramfs >/dev/null
-cp initramfs/out/busybox initramfs/out/dropbearmulti initramfs/out/dnsmasq initramfs/
+cp initramfs/out/busybox initramfs/out/dropbearmulti initramfs/
 make -s -C tools CROSS_COMPILE="$CROSS_COMPILE"
 python3 tools/mkflash.py env
 

@@ -17,7 +17,7 @@ SPI flash with A/B updates and rollback, and serves DNS for the home network.
 
 | Path | Contents |
 |---|---|
-| `initramfs/` | the root filesystem built into the kernel: init, `sysupgrade`, `buttond`, `mtdname`, `/etc` files, and the Dockerfile that builds BusyBox, Dropbear and dnsmasq |
+| `initramfs/` | the root filesystem built into the kernel: init, `sysupgrade`, `buttond`, `mtdname`, `/etc` files, and the Dockerfile that builds BusyBox and Dropbear |
 | `tools/` | `mkflash.py` (flash images), the boot trampoline, `onu.py` and `serialctl.py` (test harness: serial, U-Boot, TFTP, smart plug) |
 | `docs/` | write-ups: bring-up log (`BLOG.md`), SoC notes (`SPEC.md`), packet engine (`PIE_RE.md`), switch init (`switch-init.md`), recovery |
 | `archive/` | one-off scripts and register dumps from the reverse engineering, kept for reference |
@@ -103,9 +103,9 @@ once. The new slot is kept only if the LAN port comes up within 60 s; a crash, a
 - Network: DHCP on `lan` (the router reserves 192.168.15.11), NTP from pool.ntp.org.
   Defaults in `/etc/network.conf`; copy it to `/data/network.conf` to change them
   (`proto=static`, `ipaddr`, `netmask`, `gateway`, `dns`, optional `fallback` address).
-- DNS: dnsmasq, configured by Ansible from the infra repository (`ansible/dns.yml`, host
-  `dns`). Its config is `/data/dnsmasq.conf`; `rcS` starts it (unsupervised for now) when
-  present and the board then resolves through it.
+- DNS: dnsmasq is not in the firmware. Ansible (infra repository, `ansible/dns.yml`, host
+  `dns`) builds it and installs it as the service `/data/service/dnsmasq` with its config.
+  The board itself resolves through the DNS servers from DHCP or `network.conf`.
 - Logs: `logread` (64 KB ring buffer).
 - Buttons: Reset short press reboots, hold 5 s wipes `/data` (at the next boot); Light
   toggles the LEDs.

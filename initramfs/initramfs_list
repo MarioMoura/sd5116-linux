@@ -106,4 +106,3 @@ file /bin/dropbearmulti ${ONU_ROOT}/initramfs/dropbearmulti 0755 0 0
 slink /bin/dropbear dropbearmulti 0777 0 0
 slink /bin/dropbearkey dropbearmulti 0777 0 0
 slink /bin/scp dropbearmulti 0777 0 0
-file /bin/dnsmasq ${ONU_ROOT}/initramfs/dnsmasq 0755 0 0

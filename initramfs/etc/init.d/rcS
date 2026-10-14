@@ -38,12 +38,6 @@ if [ "$proto" = static ]; then
 fi
 [ -n "$fallback" ] && ifconfig $ifc:1 $fallback
 
-# DNS server, configured by Ansible (dns.yml); the board then resolves through it
-if [ -f /data/dnsmasq.conf ]; then
-	dnsmasq -C /data/dnsmasq.conf
-	echo "nameserver 127.0.0.1" > /etc/resolv.conf
-fi
-
 mkdir -p /dev/pts
 mount -t devpts devpts /dev/pts
 

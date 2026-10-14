@@ -10,7 +10,6 @@
 initramfs/out/
 initramfs/busybox
 initramfs/dropbearmulti
-initramfs/dnsmasq
 initramfs/etc/uboot/*.bin
 tools/*.o
 tools/*.elf

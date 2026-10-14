@@ -36,16 +36,6 @@ RUN ./configure --host=arm-linux-musleabi --enable-static --disable-zlib \
     arm-linux-musleabi-strip dropbearmulti && \
     cp dropbearmulti /out_dropbearmulti
 
-WORKDIR /build
-RUN wget -q https://thekelleys.org.uk/dnsmasq/dnsmasq-2.93.tar.xz && \
-    echo "0c00d4e5c97c8306e5fb932b348b34269c9c29a0e7df0e8e82958b407092bc19  dnsmasq-2.93.tar.xz" | sha256sum -c - && \
-    tar xf dnsmasq-2.93.tar.xz
-WORKDIR /build/dnsmasq-2.93
-RUN make -j$(nproc) CC=arm-linux-musleabi-gcc LDFLAGS=-static && \
-    arm-linux-musleabi-strip src/dnsmasq && \
-    cp src/dnsmasq /out_dnsmasq
-
 FROM scratch
 COPY --from=builder /out_busybox /busybox
 COPY --from=builder /out_dropbearmulti /dropbearmulti
-COPY --from=builder /out_dnsmasq /dnsmasq

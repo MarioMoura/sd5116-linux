@@ -8,12 +8,7 @@ bound|renew)
 	ifconfig $interface $ip netmask ${subnet:-255.255.255.0}
 	while route del default 2>/dev/null; do :; done
 	for r in $router; do route add default gw $r dev $interface; break; done
-	if [ -f /data/dnsmasq.conf ]; then
-		echo "nameserver 127.0.0.1" > /etc/resolv.conf
-	else
-		: > /etc/resolv.conf
-		for d in $dns; do echo "nameserver $d" >> /etc/resolv.conf; done
-	fi
+	for d in $dns; do echo "nameserver $d"; done > /etc/resolv.conf
 	;;
 esac
 exit 0
