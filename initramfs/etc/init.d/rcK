@@ -1,0 +1,8 @@
+#!/bin/sh
+# Shutdown: stop the services, then leave /data read-only so JFFS2 is clean.
+# runsvdir keeps /data busy, so stop it too (init no longer respawns it).
+sv -w 5 force-stop /var/service/* /etc/service/* >/dev/null 2>&1
+killall -HUP runsvdir
+sleep 1
+sync
+mount -o remount,ro /data

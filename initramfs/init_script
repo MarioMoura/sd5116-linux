@@ -1,4 +1,6 @@
 #!/bin/sh
+# What BusyBox init needs, and the hardware watchdog as early as possible: a hang
+# from here on resets the board, and a trial boot then falls back to the old slot.
 export PATH=/bin:/sbin:/usr/bin:/usr/sbin
 
 mkdir -p /usr/bin /usr/sbin
@@ -6,91 +8,8 @@ mkdir -p /usr/bin /usr/sbin
 
 mount -t proc none /proc
 mount -t sysfs none /sys
-
-# Mount devtmpfs over /dev to get all device nodes
 mount -t devtmpfs none /dev
 
-
-# hardware watchdog: reset the board if userspace stops responding
 watchdog -T 60 -t 10 /dev/watchdog
 
-mkdir -p /data
-if ! mount -t jffs2 mtd:data /data 2>/dev/null; then
-	echo "Formatting /data"
-	flash_eraseall -j $(mtdname data) && mount -t jffs2 mtd:data /data
-fi
-
-echo
-echo "=== SD5116 Linux $(uname -r) ==="
-echo
-
-. /etc/network.conf
-[ -f /data/network.conf ] && . /data/network.conf
-hostname $hostname
-
-# system log in a 64 KB RAM ring buffer, read with logread
-syslogd -C64
-
-ifconfig lo 127.0.0.1 up
-
-# LAN port: "lan" with the DSA switch driver, eth0 with the old driver
-ifc=lan
-[ -d /sys/class/net/lan ] || ifc=eth0
-# busybox ip cannot look up DSA ports (lan@eth0), use ifconfig and route
-ifconfig $ifc hw ether BC:98:89:09:5D:98 up
-if [ "$proto" = static ]; then
-	ifconfig $ifc $ipaddr netmask $netmask
-	[ -n "$gateway" ] && route add default gw $gateway
-	for d in $dns; do echo "nameserver $d"; done > /etc/resolv.conf
-else
-	udhcpc -i $ifc -b -s /etc/udhcpc.script -x hostname:$hostname
-fi
-[ -n "$fallback" ] && ifconfig $ifc:1 $fallback
-[ -n "$ntp" ] && ntpd -p $ntp
-
-# DNS server, configured by Ansible (dns.yml); the board then resolves through it
-if [ -f /data/dnsmasq.conf ]; then
-	dnsmasq -C /data/dnsmasq.conf
-	echo "nameserver 127.0.0.1" > /etc/resolv.conf
-fi
-
-mkdir -p /dev/pts
-mount -t devpts devpts /dev/pts
-
-# SSH, key login only; the host key lives in /data to survive upgrades
-mkdir -p -m 700 /root/.ssh
-cat /etc/ssh/authorized_keys /data/ssh/authorized_keys > /root/.ssh/authorized_keys 2>/dev/null
-chmod 600 /root/.ssh/authorized_keys
-hostkey=/data/dropbear/dropbear_ed25519_host_key
-mkdir -p /data/dropbear 2>/dev/null
-[ -f $hostkey ] || dropbearkey -t ed25519 -f $hostkey >/dev/null 2>&1 ||
-	hostkey=/tmp/dropbear_ed25519_host_key
-[ -f $hostkey ] || dropbearkey -t ed25519 -f $hostkey >/dev/null
-dropbear -s -r $hostkey
-
-# Trial boot from sysupgrade: keep this slot only if the LAN port comes up.
-slot=$(sed -n 's/.* slot=\([ab]\).*/\1/p;s/^slot=\([ab]\).*/\1/p' /proc/cmdline)
-env=$(mtdname u-boot-env)
-envslot=$(tr '\0' '\n' < $env | sed -n 's/^slot=//p' | head -1)
-if [ -n "$slot" ] && [ "$envslot" != "$slot" ]; then
-	(
-		for i in $(seq 60); do
-			if [ "$(cat /sys/class/net/$ifc/operstate)" = up ]; then
-				flashcp /etc/uboot/env-$slot.bin $env &&
-					echo "sysupgrade: slot $slot confirmed"
-				exit 0
-			fi
-			sleep 1
-		done
-		echo "sysupgrade: slot $slot unhealthy, rolling back"
-		reboot -f
-	) &
-fi
-
-buttond &
-
-echo
-echo "Type 'ifconfig' to check network status"
-echo
-
-exec setsid cttyhack /bin/sh
+exec /bin/busybox init

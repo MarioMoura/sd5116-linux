@@ -1,0 +1,3 @@
+#!/bin/sh
+. /var/run/network.conf
+exec udhcpc -f -i $ifc -s /etc/udhcpc.script -x hostname:$hostname

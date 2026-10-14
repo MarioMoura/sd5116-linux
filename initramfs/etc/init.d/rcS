@@ -1,0 +1,89 @@
+#!/bin/sh
+# Boot setup, run once by init before the services start.
+
+mkdir -p /data
+if ! mount -t jffs2 mtd:data /data 2>/dev/null; then
+	echo "Formatting /data"
+	flash_eraseall -j $(mtdname data) && mount -t jffs2 mtd:data /data
+fi
+# set by buttond: erasing here is safe, nothing uses /data yet
+if [ -f /data/.factory-reset ]; then
+	echo "Factory reset: erasing /data"
+	umount /data
+	flash_eraseall -j $(mtdname data) && mount -t jffs2 mtd:data /data
+fi
+
+echo
+echo "=== SD5116 Linux $(uname -r) ==="
+echo
+
+# LAN port: "lan" with the DSA switch driver, eth0 with the old driver
+ifc=lan
+[ -d /sys/class/net/lan ] || ifc=eth0
+{
+	cat /etc/network.conf
+	cat /data/network.conf 2>/dev/null
+	echo "ifc=$ifc"
+} > /var/run/network.conf
+. /var/run/network.conf
+hostname $hostname
+
+ifconfig lo 127.0.0.1 up
+# busybox ip cannot look up DSA ports (lan@eth0), use ifconfig and route
+ifconfig $ifc hw ether BC:98:89:09:5D:98 up
+if [ "$proto" = static ]; then
+	ifconfig $ifc $ipaddr netmask $netmask
+	[ -n "$gateway" ] && route add default gw $gateway
+	for d in $dns; do echo "nameserver $d"; done > /etc/resolv.conf
+fi
+[ -n "$fallback" ] && ifconfig $ifc:1 $fallback
+
+# DNS server, configured by Ansible (dns.yml); the board then resolves through it
+if [ -f /data/dnsmasq.conf ]; then
+	dnsmasq -C /data/dnsmasq.conf
+	echo "nameserver 127.0.0.1" > /etc/resolv.conf
+fi
+
+mkdir -p /dev/pts
+mount -t devpts devpts /dev/pts
+
+# SSH, key login only; the host key lives in /data to survive upgrades
+mkdir -p -m 700 /root/.ssh
+cat /etc/ssh/authorized_keys /data/ssh/authorized_keys > /root/.ssh/authorized_keys 2>/dev/null
+chmod 600 /root/.ssh/authorized_keys
+hostkey=/data/dropbear/dropbear_ed25519_host_key
+mkdir -p /data/dropbear 2>/dev/null
+[ -f $hostkey ] || dropbearkey -t ed25519 -f $hostkey >/dev/null 2>&1 ||
+	hostkey=/tmp/dropbear_ed25519_host_key
+[ -f $hostkey ] || dropbearkey -t ed25519 -f $hostkey >/dev/null
+ln -sf $hostkey /var/run/dropbear_ed25519_host_key
+
+# firmware services
+mkdir -p /etc/service
+enable="syslogd dropbear buttond"
+[ "$proto" = static ] || enable="$enable dhcp"
+[ -n "$ntp" ] && enable="$enable ntpd"
+for s in $enable; do ln -s /etc/sv/$s /etc/service/$s; done
+
+# services installed later (Ansible); `sv status <name>` looks in /var/service
+mkdir -p /data/service
+ln -s /data/service /var/service
+
+# Trial boot from sysupgrade: keep this slot only if the LAN port comes up.
+slot=$(sed -n 's/.* slot=\([ab]\).*/\1/p;s/^slot=\([ab]\).*/\1/p' /proc/cmdline)
+env=$(mtdname u-boot-env)
+envslot=$(tr '\0' '\n' < $env | sed -n 's/^slot=//p' | head -1)
+if [ -n "$slot" ] && [ "$envslot" != "$slot" ]; then
+	(
+		for i in $(seq 60); do
+			if [ "$(cat /sys/class/net/$ifc/operstate)" = up ]; then
+				flashcp /etc/uboot/env-$slot.bin $env &&
+					echo "sysupgrade: slot $slot confirmed"
+				exit 0
+			fi
+			sleep 1
+		done
+		echo "sysupgrade: slot $slot unhealthy, rolling back"
+		reboot -f
+	) &
+fi

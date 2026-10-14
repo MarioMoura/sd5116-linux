@@ -1,0 +1,8 @@
+# BusyBox init. runsv supervises the services: /etc/service holds the firmware's,
+# /var/service (= /data/service) those installed later, e.g. by Ansible.
+::sysinit:/etc/init.d/rcS
+::respawn:runsvdir -P /etc/service
+::respawn:runsvdir -P /var/service
+::respawn:/bin/cttyhack /bin/sh
+::ctrlaltdel:/sbin/reboot
+::shutdown:/etc/init.d/rcK

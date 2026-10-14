@@ -12,13 +12,12 @@ for d in /sys/class/input/event*; do
 done
 [ -n "$dev" ] || exit 1
 
+# services may keep /data busy, so the erase happens at the next boot (rcS)
 factory_reset() {
 	for l in /sys/class/leds/*; do echo timer > $l/trigger; done
-	echo "buttond: factory reset, erasing /data"
-	umount /data
-	flash_eraseall -j $(mtdname data)
-	sync
-	reboot -f
+	echo "buttond: factory reset, erasing /data after reboot"
+	touch /data/.factory-reset
+	reboot
 }
 
 toggle_leds() {
@@ -48,7 +47,7 @@ while :; do
 			factory_reset
 		else
 			echo "buttond: reset pressed, rebooting"
-			reboot -f
+			reboot
 		fi ;;
 	$KEY_LIGHTS_TOGGLE:1)
 		toggle_leds ;;

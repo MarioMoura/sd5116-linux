@@ -64,8 +64,23 @@ slink /sbin/mdev ../bin/busybox 0777 0 0
 slink /sbin/reboot ../bin/busybox 0777 0 0
 slink /sbin/halt ../bin/busybox 0777 0 0
 
-# Init script
+# Init: /init starts BusyBox init, which runs rcS and the runsv services
 file /init ${ONU_ROOT}/initramfs/init_script 0755 0 0
+file /etc/inittab ${ONU_ROOT}/initramfs/etc/inittab 0644 0 0
+dir /etc/init.d 0755 0 0
+file /etc/init.d/rcS ${ONU_ROOT}/initramfs/etc/init.d/rcS 0755 0 0
+file /etc/init.d/rcK ${ONU_ROOT}/initramfs/etc/init.d/rcK 0755 0 0
+dir /etc/sv 0755 0 0
+dir /etc/sv/syslogd 0755 0 0
+file /etc/sv/syslogd/run ${ONU_ROOT}/initramfs/etc/sv/syslogd/run 0755 0 0
+dir /etc/sv/dhcp 0755 0 0
+file /etc/sv/dhcp/run ${ONU_ROOT}/initramfs/etc/sv/dhcp/run 0755 0 0
+dir /etc/sv/ntpd 0755 0 0
+file /etc/sv/ntpd/run ${ONU_ROOT}/initramfs/etc/sv/ntpd/run 0755 0 0
+dir /etc/sv/dropbear 0755 0 0
+file /etc/sv/dropbear/run ${ONU_ROOT}/initramfs/etc/sv/dropbear/run 0755 0 0
+dir /etc/sv/buttond 0755 0 0
+file /etc/sv/buttond/run ${ONU_ROOT}/initramfs/etc/sv/buttond/run 0755 0 0
 
 # U-Boot env blobs (tools/mkflash.py env) and updater
 dir /etc/uboot 0755 0 0

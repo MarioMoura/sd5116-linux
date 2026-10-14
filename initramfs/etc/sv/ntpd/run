@@ -1,0 +1,3 @@
+#!/bin/sh
+. /var/run/network.conf
+exec ntpd -n -p $ntp

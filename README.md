@@ -91,6 +91,12 @@ once. The new slot is kept only if the LAN port comes up within 60 s; a crash, a
 
 ## On the board
 
+- Init: BusyBox `init` (`/etc/inittab`) runs `/etc/init.d/rcS` once, then `runsv` supervises
+  the services and restarts them if they die. Firmware services live in `/etc/service`
+  (syslogd, dhcp, ntpd, dropbear, buttond); services installed later go in `/data/service`,
+  survive upgrades and are picked up within 5 s. `sv status|up|down|restart <name>` works on
+  those, `sv status /etc/service/<name>` on the firmware ones. `reboot` stops the services
+  and leaves `/data` read-only first.
 - SSH: Dropbear, key login only. Baked-in key `initramfs/etc/ssh/authorized_keys`; more
   keys in `/data/ssh/authorized_keys`. The host key lives in `/data/dropbear/`. `scp` needs
   `-O` (no SFTP server). No telnet; the serial console is the fallback.
@@ -98,10 +104,11 @@ once. The new slot is kept only if the LAN port comes up within 60 s; a crash, a
   Defaults in `/etc/network.conf`; copy it to `/data/network.conf` to change them
   (`proto=static`, `ipaddr`, `netmask`, `gateway`, `dns`, optional `fallback` address).
 - DNS: dnsmasq, configured by Ansible from the infra repository (`ansible/dns.yml`, host
-  `dns`). Its config is `/data/dnsmasq.conf`; init starts it when present and the board
-  then resolves through it.
+  `dns`). Its config is `/data/dnsmasq.conf`; `rcS` starts it (unsupervised for now) when
+  present and the board then resolves through it.
 - Logs: `logread` (64 KB ring buffer).
-- Buttons: Reset short press reboots, hold 5 s wipes `/data`; Light toggles the LEDs.
+- Buttons: Reset short press reboots, hold 5 s wipes `/data` (at the next boot); Light
+  toggles the LEDs.
 - Hardware watchdog: fed by BusyBox `watchdog`, resets the board if userspace hangs.
 
 ## Upstream
