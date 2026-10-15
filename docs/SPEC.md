@@ -243,57 +243,27 @@ TFTP boot command: `tftpboot 0x80300000 uImage && bootm 0x80300000`
 | Root filesystem | cramfs on `/dev/mtdblock3` |
 | Kernel config | Not available (no `/proc/config.gz`, no IKCFG marker in binary) |
 
-## What We Have
+## Status
 
-- [x] Full 16MB flash dump (`onu_backup.bin`)
-- [x] Extracted cramfs rootfs (`rootfs_extracted/`)
-- [x] All vendor kernel modules (`.ko` files in rootfs)
-- [x] Complete dmesg log
-- [x] `/proc/iomem`, `/proc/interrupts`, `/proc/cpuinfo`, `/proc/meminfo`
-- [x] `/proc/kallsyms` dump (`log` file)
-- [x] Telnet root access to running device
-- [x] Serial console access (JP2, UART adapter connected)
-- [x] U-Boot access (serial, autoboot interrupt)
-- [x] TFTP boot configured and tested (ping OK)
-- [x] GIC base addresses reverse-engineered
-- [x] Cross-compilation toolchain (GCC 14.2.0 arm-linux-gnueabi)
-- [x] Linux 6.12.x LTS kernel source (`linux/`)
+Mainline Linux (v7.3-rc6, branch `sd5116` in `linux/`) boots from flash with A/B slots,
+a BusyBox userland and SSH. See the README for the board side.
 
-## What We Need
+### Done
+- [x] Serial console, U-Boot access, TFTP boot
+- [x] Device tree: Cortex-A9 SCU, GIC, global and TWD timers, DW APB UARTs and GPIO
+- [x] SoC support and the system controller (`arch/arm/mach-hisi`, syscon)
+- [x] SPI flash controller driver (`hisilicon,sd5116-sfc`), root filesystem as initramfs, `/data` on JFFS2
+- [x] Watchdog driver
+- [x] Ethernet: PIE conduit, DSA switch with tag driver, MDIO, phylink, flow control, MTU, statistics (see `dsa-design.md`)
+- [x] dt-binding YAML schemas for all new drivers
+- [x] Self-hosted boot from flash, sysupgrade with trial boot and fallback
+- [x] BusyBox init with supervised services; Ansible installs services in `/data/service`
 
-### Phase 1: Reconnaissance
-- [x] Probe GIC base address
-- [x] Get serial console access
-- [x] Check U-Boot environment for TFTP/netboot support
-- [ ] Probe timer base address (try Cortex-A9 private timer at `0x10180600`, or SP804 at nearby addresses)
-- [ ] Dump all `hi_*` kernel modules and reverse-engineer register addresses with Ghidra
-- [ ] Find system control register base (from `hi_sysctl` module)
-- [ ] Map the full peripheral address space via `devmem` probing
-
-### Phase 2: Minimal Boot
-- [ ] Write a minimal device tree (`.dts`) for SD5116
-- [ ] Configure mainline kernel 6.12 with: ARM multi-platform, Cortex-A9, GIC, timer, DW UART
-- [ ] Cross-compile with `arm-linux-gnueabi-` toolchain
-- [ ] Boot via U-Boot TFTP
-- [ ] Target: get to serial console output and kernel panic (no rootfs) = success
-
-### Phase 3: Ethernet
-- [ ] Reverse-engineer `hi_pie` module for ethernet register map
-- [ ] Determine if the ethernet MAC is a known IP block (Synopsys DesignWare GMAC / stmmac is common in HiSilicon)
-- [ ] Write or adapt an ethernet driver
-- [ ] Target: ping from the device
-
-### Phase 4: Full System
-- [ ] SPI flash controller driver (try mainline `hisi-sfc`)
-- [ ] Root filesystem on SPI flash
-- [ ] GPIO, I2C, SPI bus drivers
-- [ ] Target: self-hosted boot from flash with network
-
-### Phase 5: Upstream
-- [ ] Clean up device tree bindings
-- [ ] Write dt-binding YAML schemas
-- [ ] Submit patches to `linux-arm-kernel@lists.infradead.org`
-- [ ] Blog series documenting the entire RE process
+### Next
+- [ ] Upstream: two series (platform, Ethernet), `get_maintainer`, `dt_binding_check`, Signed-off-by
+- [ ] I2C controller (vendor `hi_i2c.ko`), likely the SFP EEPROM and diagnostics
+- [ ] PON port (GPON MAC, vendor stack)
+- [ ] Blog series documenting the RE process
 
 ## Reference SoCs in Mainline
 

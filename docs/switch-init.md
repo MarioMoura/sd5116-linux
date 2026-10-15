@@ -45,7 +45,8 @@ ref_kexec_rstctl.txt). Fixes applied to sd5116_switch_init this session:
   0x70=0xaa55a5a5 (magic key), and 0x33 was written to WRONG offset 0x84 instead
   of 0x74. Adding these made DP threshold 0x11200014 load 0x1d4c (was stuck 0x1fff).
 - 0x11100010 must be 0x00fa0032 WITHOUT bit31 (I was setting 0x80000000; kexec has
-  it clear and the FAM commit self-clears once the engine runs).
+  it clear). Correction: bit31 is not a commit bit, it is the flow-control enable of
+  GE port 8 (`FAM_FC_EN` in the driver), off unless pause is negotiated.
 - native_switch_init module param added (default 0 = inherit; =1 runs native init).
   DTS bootargs carries sd5116_eth.native_switch_init=1 for cold-boot testing.
 

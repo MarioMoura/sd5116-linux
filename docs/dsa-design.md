@@ -30,6 +30,20 @@ The switch floods frames back to their ingress port (port_iso table has no effec
 - Setup flushes the FDB and clears the flood entry of all 4096 VLANs.
 - RX buffers are 16 KB (engine length field max), there is no RX size limit in the descriptor.
 
+## LAN MAC (GE port 8, base `GE_MAC(8)`)
+
+Found in `hi_bridge.ko` and by register sweeps; verified over a direct cable (USB adapter with pause support).
+
+- Link: `mac_link_up` writes the speed and duplex (+0x14) inside the +0x18 update latch, then sets the port enable (+0x1c bit 0, vendor `set_port_en`); `mac_link_down` clears it.
+- Flow control, sent: FAM `FAM_FC(n)` bit 31 enables it with XON/XOFF thresholds (reset value 0x00fa0032 has it off), plus `IPS_FC_CTRL`.
+- Flow control, received: +0x50 bit 0. The MAC honoured received pause frames by default even with flow control off; it is now set only when negotiated. Found by a sweep under continuous pause: only this bit let traffic out.
+- MTU: +0x100 is the max frame length (bits 13:0, FCS included, reset 1518, the vendor writes 2000). Only TX is limited (oversize frames count in the TX over-2000 counter); RX passed frames above it. Max MTU 1978 = 2000 - 22, frames up to 1996 bytes verified both ways. The vendor MTU API is software only.
+- Statistics: MIB counters at +0x400 (RX) and +0x4d0 (TX), exposed through ethtool.
+- +0x000 is a status register (read only, harmless).
+- The PIE restarts its rings on a transmit timeout.
+
+Open: once, moving the cable from the router to the adapter hung the board until the watchdog reset it; not reproduced. The vendor has a PHY reset workaround ("isolate err", "OUT OF LOCKING") we do not port.
+
 ## Not supported (YAGNI)
 
 Bridge offload, FDB ops, VLAN filtering, PON port, VLAN sub-interfaces need CONFIG_VLAN_8021Q.
