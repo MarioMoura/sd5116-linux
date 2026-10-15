@@ -166,8 +166,11 @@ Related IRQs:
 - No `/sys/class/gpio/` entries exported
 
 ### I2C
-- Module: `hi_i2c`
-- Base address: unknown
+- Module: `hi_i2c` (polls, no interrupt)
+- DesignWare I2C 1.11a at `0x10111000`, GIC SPI 44 (found by raising TX empty and watching the GIC pending bits)
+- Clock gate: system controller `0x14880000 + 0x2c` bit 26; pins: `0x14900200` bits 0-1 clear = I2C, set = GPIO
+- The vendor has two code paths: chip IDs 1-3 (SD5115) and 4, 5, 7 (SD5116)
+- On the bus: Semtech GN25L95 PON transceiver, SFF-8472 style ID EEPROM at 0x50 and diagnostics at 0x51. Its ID block has a wrong checksum (0x3f) and extended identifier 0xa0, so Linux's `sfp` driver rejects it; `optics` reads it from userspace instead.
 
 ### SPI (bitbang/bus, not flash)
 - Module: `hi_spi`
@@ -255,13 +258,13 @@ a BusyBox userland and SSH. See the README for the board side.
 - [x] SPI flash controller driver (`hisilicon,sd5116-sfc`), root filesystem as initramfs, `/data` on JFFS2
 - [x] Watchdog driver
 - [x] Ethernet: PIE conduit, DSA switch with tag driver, MDIO, phylink, flow control, MTU, statistics (see `dsa-design.md`)
+- [x] I2C (DesignWare) with a clock gate driver, PON transceiver diagnostics via `optics`
 - [x] dt-binding YAML schemas for all new drivers
 - [x] Self-hosted boot from flash, sysupgrade with trial boot and fallback
 - [x] BusyBox init with supervised services; Ansible installs services in `/data/service`
 
 ### Next
 - [ ] Upstream: two series (platform, Ethernet), `get_maintainer`, `dt_binding_check`, Signed-off-by
-- [ ] I2C controller (vendor `hi_i2c.ko`), likely the SFP EEPROM and diagnostics
 - [ ] PON port (GPON MAC, vendor stack)
 - [ ] Blog series documenting the RE process
 

@@ -1,0 +1,22 @@
+#!/bin/sh
+# optics: identity and live diagnostics of the PON transceiver (SFF-8472 over I2C)
+rd() { i2ctransfer -y 0 w1@$1 $2 r$3@$1; }
+str() { for b in $(rd 0x50 $1 $2); do printf "\\$(printf %o $b)"; done | sed 's/ *$//'; }
+
+echo "Vendor:     $(str 20 16)"
+echo "Part:       $(str 40 16) rev $(str 56 4)"
+echo "Serial:     $(str 68 16)"
+echo "Date:       $(str 84 8)"
+rd 0x50 60 2 | awk '{ printf "Wavelength: %d nm\n", $1 * 256 + $2 }'
+# internally calibrated: temp 1/256 C, Vcc 100 uV, bias 2 uA, power 0.1 uW
+rd 0x51 96 10 | awk '
+function w(i) { return $i * 256 + $(i + 1) }
+function dbm(v) { return v ? sprintf("%.2f dBm", 10 * log(v / 10000) / log(10)) : "no light" }
+{
+	t = w(1); if (t >= 32768) t -= 65536
+	printf "Temp:       %.1f C\n", t / 256
+	printf "Vcc:        %.3f V\n", w(3) / 10000
+	printf "Laser bias: %.3f mA\n", w(5) * 2 / 1000
+	printf "TX power:   %s\n", dbm(w(7))
+	printf "RX power:   %s\n", dbm(w(9))
+}'

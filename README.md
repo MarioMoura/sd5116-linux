@@ -107,6 +107,8 @@ once. The new slot is kept only if the LAN port comes up within 60 s; a crash, a
   `dns`) builds it and installs it as the service `/data/service/dnsmasq` with its config.
   The board itself resolves through the DNS servers from DHCP or `network.conf`.
 - Logs: `logread` (64 KB ring buffer).
+- Optics: `optics` prints the PON transceiver's identity and live readings (temperature,
+  voltage, laser bias, TX and RX optical power) over I2C (`/dev/i2c-0`, devices 0x50 and 0x51).
 - Buttons: Reset short press reboots, hold 5 s wipes `/data` (at the next boot); Light
   toggles the LEDs.
 - Hardware watchdog: fed by BusyBox `watchdog`, resets the board if userspace hangs.
@@ -114,5 +116,6 @@ once. The new slot is kept only if the LAN port comes up within 60 s; a crash, a
 ## Upstream
 
 Before sending: `git rebase --signoff v7.3-rc6`, then `scripts/get_maintainer.pl` and
-`git format-patch --cover-letter`, as two series: the first 10 commits (platform) and
-the next 9 (Ethernet, for the netdev and devicetree lists).
+`git format-patch --cover-letter`, as two series: platform (SoC, flash, watchdog, clock
+gates, I2C, defconfigs) and Ethernet (PIE, switch, tagger, MDIO, for the netdev and
+devicetree lists). The commits are interleaved on the branch, so sort them first.

@@ -91,6 +91,7 @@ file /etc/uboot/env-try-b.bin ${ONU_ROOT}/initramfs/etc/uboot/env-try-b.bin 0644
 file /sbin/sysupgrade ${ONU_ROOT}/initramfs/sysupgrade 0755 0 0
 file /sbin/mtdname ${ONU_ROOT}/initramfs/mtdname 0755 0 0
 file /sbin/buttond ${ONU_ROOT}/initramfs/buttond 0755 0 0
+file /sbin/optics ${ONU_ROOT}/initramfs/optics 0755 0 0
 
 # Users, network config, SSH
 dir /root 0700 0 0
