@@ -31,10 +31,11 @@ material (firmware dumps, decompiled vendor code).
 Branch `sd5116` of [MarioMoura/linux](https://github.com/MarioMoura/linux/tree/sd5116),
 on top of v7.3-rc6:
 
-- platform series (10 commits): SoC and board bindings, SoC Kconfig, SPI flash controller
-  and watchdog drivers, device tree, multi_v7_defconfig;
-- Ethernet series (9 commits): MDIO driver, PIE DMA conduit driver, DSA tagger and switch
-  driver, bindings, device tree nodes, multi_v7_defconfig;
+- platform series (13 commits): SoC and board bindings, SoC Kconfig, SPI flash controller,
+  watchdog and clock drivers, device tree including I2C, multi_v7_defconfig;
+- Ethernet series (16 commits): MDIO driver, PIE DMA conduit driver, DSA tagger and switch
+  driver, bindings, device tree nodes, defconfigs, then statistics, flow control, MTU and
+  link fixes;
 - two `LOCAL:` commits not meant for upstream: console bootargs and `sd5116_defconfig`.
 
 The LAN port is the `lan` interface; `eth0` is the internal conduit to the switch.
@@ -93,7 +94,7 @@ once. The new slot is kept only if the LAN port comes up within 60 s; a crash, a
 
 - Init: BusyBox `init` (`/etc/inittab`) runs `/etc/init.d/rcS` once, then `runsv` supervises
   the services and restarts them if they die. Firmware services live in `/etc/service`
-  (syslogd, dhcp, ntpd, dropbear, buttond); services installed later go in `/data/service`,
+  (syslogd, logsave, dhcp, ntpd, dropbear, buttond); services installed later go in `/data/service`,
   survive upgrades and are picked up within 5 s. `sv status|up|down|restart <name>` works on
   those, `sv status /etc/service/<name>` on the firmware ones. `reboot` stops the services
   and leaves `/data` read-only first.
@@ -106,7 +107,8 @@ once. The new slot is kept only if the LAN port comes up within 60 s; a crash, a
 - DNS: dnsmasq is not in the firmware. Ansible (infra repository, `ansible/dns.yml`, host
   `dns`) builds it and installs it as the service `/data/service/dnsmasq` with its config.
   The board itself resolves through the DNS servers from DHCP or `network.conf`.
-- Logs: `logread` (64 KB ring buffer).
+- Logs: `logread` (64 KB ring buffer, lost on reboot); `logsave` copies it to
+  `/data/log/current`, rotated at 256 KB with 4 old files kept.
 - Optics: `optics` prints the PON transceiver's identity and live readings (temperature,
   voltage, laser bias, TX and RX optical power) over I2C (`/dev/i2c-0`, devices 0x50 and 0x51).
 - Buttons: Reset short press reboots, hold 5 s wipes `/data` (at the next boot); Light

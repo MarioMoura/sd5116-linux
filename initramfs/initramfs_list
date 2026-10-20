@@ -81,6 +81,10 @@ dir /etc/sv/dropbear 0755 0 0
 file /etc/sv/dropbear/run ${ONU_ROOT}/initramfs/etc/sv/dropbear/run 0755 0 0
 dir /etc/sv/buttond 0755 0 0
 file /etc/sv/buttond/run ${ONU_ROOT}/initramfs/etc/sv/buttond/run 0755 0 0
+dir /etc/sv/logsave 0755 0 0
+file /etc/sv/logsave/run ${ONU_ROOT}/initramfs/etc/sv/logsave/run 0755 0 0
+dir /etc/sv/logsave/log 0755 0 0
+file /etc/sv/logsave/log/run ${ONU_ROOT}/initramfs/etc/sv/logsave/log/run 0755 0 0
 
 # U-Boot env blobs (tools/mkflash.py env) and updater
 dir /etc/uboot 0755 0 0

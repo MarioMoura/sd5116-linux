@@ -1,0 +1,5 @@
+#!/bin/sh
+# 256 KB per file, 4 rotated: at most 1.25 MB of flash
+mkdir -p /data/log
+printf 's262144\nn4\n' > /data/log/config
+exec svlogd /data/log

@@ -10,10 +10,11 @@ RUN wget -q https://musl.cc/arm-linux-musleabi-cross.tgz -O /tmp/toolchain.tgz &
 ENV PATH="/opt/arm-linux-musleabi-cross/bin:$PATH"
 
 WORKDIR /build
-RUN wget -q https://busybox.net/downloads/busybox-1.36.1.tar.bz2 && \
-    tar xf busybox-1.36.1.tar.bz2
+RUN wget -q https://busybox.net/downloads/busybox-1.38.0.tar.bz2 && \
+    echo "34f9ea6ff8636f2c9241153b9114eefa9e65674a45318ae1ef95bb5f31c53bb2  busybox-1.38.0.tar.bz2" | sha256sum -c - && \
+    tar xf busybox-1.38.0.tar.bz2
 
-WORKDIR /build/busybox-1.36.1
+WORKDIR /build/busybox-1.38.0
 RUN make CROSS_COMPILE=arm-linux-musleabi- defconfig && \
     sed -i 's/# CONFIG_STATIC is not set/CONFIG_STATIC=y/' .config && \
     sed -i 's/CONFIG_FEATURE_HAVE_RPC=y/# CONFIG_FEATURE_HAVE_RPC is not set/' .config && \

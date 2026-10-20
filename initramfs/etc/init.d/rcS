@@ -54,7 +54,7 @@ ln -sf $hostkey /var/run/dropbear_ed25519_host_key
 
 # firmware services
 mkdir -p /etc/service
-enable="syslogd dropbear buttond"
+enable="syslogd logsave dropbear buttond"
 [ "$proto" = static ] || enable="$enable dhcp"
 [ -n "$ntp" ] && enable="$enable ntpd"
 for s in $enable; do ln -s /etc/sv/$s /etc/service/$s; done
